@@ -17,8 +17,9 @@ const router = createRouter({
       component: AboutView,
     },
     {
-      path: '/event/123',
-      name: 'evebt-detail',
+      path: '/event/:id',
+      name: 'event-detail',
+      props: true,
       component: EventDetailView,
     },
   ],
