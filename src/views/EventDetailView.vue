@@ -13,7 +13,7 @@ onMounted(() => {
     .then((response) => {
       event.value = response.data
     })
-    .catch((error) => console.loh(error))
+    .catch((error) => console.log(error))
 })
 </script>
 
