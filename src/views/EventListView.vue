@@ -2,7 +2,8 @@
 import { ref, watchEffect, computed } from 'vue'
 import EventService from '../services/EventService.js'
 import EventCard from '@/components/EventCard.vue'
-import { useRouter, onBeforeRouteLeave } from 'vue-router'
+import { useRouter, onBeforeRouteUpdate } from 'vue-router'
+import NProgress from 'nprogress'
 const props = defineProps({
   page: {
     required: true,
@@ -12,20 +13,26 @@ const props = defineProps({
 const router = useRouter()
 const totalEvents = ref(0)
 const events = ref(null)
-onBeforeRouteLeave((to, from, next) => {
-  EventService.getEvents(2, parseInt(to.query.page) || 1)
-    .then((res) => {
-      next((comp) => {
-        comp.events.value = res.data
-        comp.totalEvents.value = res.headers['x-total-count']
-        console.log(comp)
+onBeforeRouteUpdate((to, from, next) => {
+  NProgress.start()
+  setTimeout(() => {
+    EventService.getEvents(2, parseInt(to.query.page) || 1)
+      .then((res) => {
+        next((comp) => {
+          comp.events.value = res.data
+          comp.totalEvents.value = res.headers['x-total-count']
+          console.log(comp)
+        })
       })
-    })
-    .catch(() => {
-      next({
-        name: 'network-error',
+      .catch(() => {
+        next({
+          name: 'network-error',
+        })
       })
-    })
+      .finally(() => {
+        NProgress.done()
+      })
+  }, 3000)
 })
 
 watchEffect(() => {
